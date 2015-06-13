@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'SmallCComplier/version'
+require 'SmallCCompiler/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "SmallCComplier"
-  spec.version       = SmallCComplier::VERSION
+  spec.name          = "SmallCCompiler"
+  spec.version       = SmallCCompiler::VERSION
   spec.authors       = ["sekai013"]
   spec.email         = ["sekai013@gmail.com"]
 
