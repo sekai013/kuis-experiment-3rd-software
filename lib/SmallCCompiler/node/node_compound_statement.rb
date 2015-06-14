@@ -8,17 +8,21 @@ module SmallCCompiler
 			@lineno = args[:lineno]
 			@declarations = args[:declarations]
 			@statements = args[:statements]
+
+			@@nest = 0
 		end
 
 		def to_original_code
-			declaration_part = @declarations.map {|d| "\t#{d.to_original_code}"}.join "\n"
-			statement_part = @statements.map {|s| "\t#{s.to_original_code}"}.join "\n"
+			@@nest += 1
+			declaration_part = @declarations.map {|d| "#{"\t" * @@nest}#{d.to_original_code}"}.join "\n"
+			statement_part = @statements.map {|s| "#{"\t" * @@nest}#{s.to_original_code}"}.join "\n"
+			@@nest -= 1
 
 			<<CODE
 {
 #{declaration_part}
 #{statement_part}
-}
+#{"\t" * @@nest}}
 CODE
 		end
 	end
