@@ -34,7 +34,7 @@ end
 
 class MyParser < Racc::Parser
 
-module_eval(<<'...end small_c.racc/module_eval...', 'small_c.racc', 367)
+module_eval(<<'...end small_c.racc/module_eval...', 'small_c.racc', 371)
 def get_tokens
   if ARGV[0]
     filename = ARGV[0]
@@ -1090,91 +1090,94 @@ module_eval(<<'.,.,', 'small_c.racc', 315)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 316)
+module_eval(<<'.,.,', 'small_c.racc', 317)
   def _reduce_68(val, _values, result)
-     result = get_val(val[1]) 
+    											r = get_val(val[1]) 
+											r.prior
+											result = r
+									
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 318)
+module_eval(<<'.,.,', 'small_c.racc', 322)
   def _reduce_69(val, _values, result)
      result = [get_val(val[0])].flatten 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 319)
+module_eval(<<'.,.,', 'small_c.racc', 323)
   def _reduce_70(val, _values, result)
      result = [get_val(val[0]), get_val(val[2])].flatten 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 321)
+module_eval(<<'.,.,', 'small_c.racc', 325)
   def _reduce_71(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 322)
+module_eval(<<'.,.,', 'small_c.racc', 326)
   def _reduce_72(val, _values, result)
      result = SmallCCompiler::BrankNode.new 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 324)
+module_eval(<<'.,.,', 'small_c.racc', 328)
   def _reduce_73(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 325)
+module_eval(<<'.,.,', 'small_c.racc', 329)
   def _reduce_74(val, _values, result)
      result = [ SmallCCompiler::BrankNode.new ] 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 327)
+module_eval(<<'.,.,', 'small_c.racc', 331)
   def _reduce_75(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 328)
+module_eval(<<'.,.,', 'small_c.racc', 332)
   def _reduce_76(val, _values, result)
      result = [ SmallCCompiler::BrankNode.new ] 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 330)
+module_eval(<<'.,.,', 'small_c.racc', 334)
   def _reduce_77(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 331)
+module_eval(<<'.,.,', 'small_c.racc', 335)
   def _reduce_78(val, _values, result)
      result = [ SmallCCompiler::BrankNode.new ] 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 333)
+module_eval(<<'.,.,', 'small_c.racc', 337)
   def _reduce_79(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 334)
+module_eval(<<'.,.,', 'small_c.racc', 338)
   def _reduce_80(val, _values, result)
      result = [ SmallCCompiler::BrankNode.new ] 
     result

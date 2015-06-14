@@ -314,7 +314,11 @@ rule
 
     primary_expr  : IDENTIFIER { result = SmallCCompiler::IdentifierNode.new(val[0]) }
                   | CONSTANT { result = SmallCCompiler::ConstantNode.new(val[0]) }
-                  | '(' expression ')' { result = get_val(val[1]) }
+                  | '(' expression ')' { 
+											r = get_val(val[1]) 
+											r.prior
+											result = r
+									}
 
     argument_expression_list : assign_expr { result = [get_val(val[0])].flatten }
                              | argument_expression_list ',' assign_expr { result = [get_val(val[0]), get_val(val[2])].flatten }
