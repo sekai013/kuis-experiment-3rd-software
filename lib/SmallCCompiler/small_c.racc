@@ -1,0 +1,412 @@
+class MyParser
+
+rule
+    program              : external_declaration { result = [get_val(val[0])].flatten }
+                         | program external_declaration { result = get_val(val) }
+
+    external_declaration : declaration { result = get_val(val[0]) }
+                         | function_prototype { result = get_val(val[0]) }
+                         | function_definition
+
+    declaration          : type_specifier declarator_list ';' {
+														result = SmallCCompiler::DeclarationNode.new({
+															:lineno => get_lineno(val[2]),
+															:type => get_val(val[0]), 
+															:declarators => get_val(val[1])
+														})
+													}
+
+    declarator_list      : declarator { result = [get_val(val[0])].flatten }
+                         | declarator_list ',' declarator { result = [get_val(val[0]), get_val(val[2])].flatten }
+
+    declarator           : direct_declarator {
+														args = get_val(val[0])
+			 											args[:pointer] = false 
+														result = SmallCCompiler::DeclaratorNode.new(args)
+													}
+                         | '*' direct_declarator {
+														args = get_val(val[1])
+														args[:pointer] = true
+														result = SmallCCompiler::DeclaratorNode.new(args)
+													}
+
+    direct_declarator  : IDENTIFIER { 
+													result = {
+														:lineno => get_lineno(val[0]),
+														:id => get_val(val[0]),
+														:size => nil
+													} 
+												}
+                       | IDENTIFIER '[' CONSTANT ']' {
+												 	result = { 
+														:lineno => get_lineno(val[1]), 
+														:id => get_val(val[0]), 
+														:size => get_val(val[2]) 
+													} 
+											 }
+
+    function_prototype   : type_specifier function_declarator ';' {
+														args = get_val(val[1])
+														args[:type] = get_val(val[0])
+														result = SmallCCompiler::FunctionPrototypeNode.new(args)
+													}
+
+    function_declarator  : IDENTIFIER '(' parameter_type_listopt ')' { 
+														result = { 
+															:lineno => get_lineno(val[1]), 
+															:id => get_val(val[0]), 
+															:params => get_val(val[2]), 
+															:pointer => false 
+														} 
+													}
+                         | '*' IDENTIFIER '(' parameter_type_listopt ')' { 
+													 	result = { 
+															:lineno => get_lineno(val[0]), 
+															:id => get_val(val[1]), 
+															:params => get_val(val[3]), 
+															:pointer => true 
+														} 
+												 }
+
+
+    function_definition : type_specifier function_declarator compound_statement {
+														args = get_val(val[1])
+														args[:type] = get_val(val[0])
+														args[:compound_statement] = get_val(val[2])
+														result = SmallCCompiler::FunctionNode.new(args)
+													}
+
+    parameter_type_list : parameter_declaration { result = [get_val(val[0])].flatten }
+                        | parameter_type_list ',' parameter_declaration { result = [get_val(val[0]), get_val(val[2])].flatten }
+
+    parameter_declaration : type_specifier parameter_declarator {
+															args = get_val(val[1])
+															args[:type] = get_val(val[0])
+															result = SmallCCompiler::ParameterNode.new(args)
+														}
+
+    parameter_declarator  : IDENTIFIER {
+															result = { 
+																:lineno => get_lineno(val[0]), 
+																:pointer => false, 
+																:parameter => get_val(val[0]) 
+															} 
+													}
+                          | '*' IDENTIFIER { 
+															result = { 
+																:lineno => get_lineno(val[0]), 
+																:pointer => true, 
+																:parameter => get_val(val[1]) 
+															}
+													}
+
+    type_specifier       : INT { result = get_val(val[0]) }
+                         | VOID { result = get_val(val[0]) }
+
+    statement : ';' { result = SmallCCompiler::StatementNode.new({ :lineno => get_lineno(val[0]), :value => SmallCCompiler::BrankNode.new }) }
+              | expression ';' { result = SmallCCompiler::StatementNode.new({ :lineno => get_lineno(val[1]), :value => get_val(val[0]) }) }
+              | compound_statement { result = SmallCCompiler::StatementNode.new({ :lineno => get_lineno(val[0]), :value => get_val(val[0]) }) }
+							| IF '(' expression ')' statement {
+									result = SmallCCompiler::IfNode.new({ 
+										:lineno => get_lineno(val[0]), 
+										:condition => get_val(val[2]), 
+										:then => get_val(val[4]), 
+										:else => SmallCCompiler::BrankNode.new 
+									}) 
+							}
+              | IF '(' expression ')' statement ELSE statement { 
+									result = SmallCCompiler::IfNode.new({ 
+										:lineno => get_lineno(val[0]), 
+										:condition => get_val(val[2]), 
+										:then => get_val(val[4]), 
+										:else => get_val(val[6]) 
+									}) 
+							}
+              | WHILE '(' expression ')' statement { 
+									result = SmallCCompiler::WhileNode.new({ 
+										:lineno => get_lineno(val[0]), 
+										:condition => get_val(val[2]), 
+										:statement => get_val(val[4]) 
+									}) 
+							}
+              | FOR '(' expressionopt ';' expressionopt ';' expressionopt ')' statement { 
+									result = SmallCCompiler::ForNode.new({ 
+										:lineno => get_lineno(val[0]), 
+										:initial => get_val(val[2]), 
+										:condition => get_val(val[4]), 
+										:next => get_val(val[6]), 
+										:statement => get_val(val[8]) 
+									}) 
+							}
+              | RETURN expressionopt ';' { result = SmallCCompiler::ReturnNode.new({ :lineno => get_lineno(val[0]), :expression => get_val(val[1]) }) }
+
+    compound_statement : '{' declaration_listopt statement_listopt '}' { 
+													result = SmallCCompiler::CompoundStatementNode.new({ 
+														:lineno => get_lineno(val[0]), 
+														:declarations => get_val(val[1]), 
+														:statements => get_val(val[2]) 
+													}) 
+												}
+
+    declaration_list : declaration { result = [get_val(val[0])].flatten }
+                     | declaration_list declaration { result = get_val(val) }
+
+    statement_list : statement { result = [get_val(val[0])].flatten }
+                   | statement_list statement { result = get_val(val) }
+
+    expression : assign_expr { result = SmallCCompiler::ExpressionNode.new( { :lineno => get_lineno(val[0]), :values => get_val(val) } )}
+               | expression ',' assign_expr { result = SmallCCompiler::ExpressionNode.new( { :lineno => get_lineno(val[1]), :values => [get_val(val[0]), get_val(val[2])].flatten }) }
+
+    assign_expr      : logical_OR_expr { result = get_val(val[0]) }
+                     | logical_OR_expr '=' assign_expr { 
+											 	result = SmallCCompiler::AssignNode.new({ 
+													:lineno => get_lineno(val[1]), 
+													:left => get_val(val[0]), 
+													:right => get_val(val[2]) 
+												}) 
+										 }
+
+    logical_OR_expr        : logical_AND_expr { result = get_val(val[0]) }
+                           | logical_OR_expr '||' logical_AND_expr { 
+															 result = SmallCCompiler::LogicNode.new({ 
+															 	:lineno => get_lineno(val[1]), 
+																:left => get_val(val[0]), 
+																:symbol => get_val(val[1]), 
+																:right => get_val(val[2]) 
+															 }) 
+													 }
+
+    logical_AND_expr      : equality_expr { result = get_val(val[0]) }
+                          | logical_AND_expr  '&&' equality_expr { 
+															result = SmallCCompiler::LogicNode.new({ 
+																:lineno => get_lineno(val[1]), 
+																:left => get_val(val[0]), 
+																:symbol => get_val(val[1]), 
+																:right => get_val(val[2]) 
+															}) 
+													}
+
+    equality_expr    : relational_expr { result = get_val(val[0]) }
+                     | equality_expr  '==' relational_expr { 
+												 result = SmallCCompiler::EqualityNode.new({ 
+													 :lineno => get_lineno(val[1]), 
+													 :left => get_val(val[0]), 
+													 :symbol => get_val(val[1]), 
+													 :right => get_val(val[2]) 
+												 }) 
+										 }
+                     | equality_expr  '!=' relational_expr { 
+												 result = SmallCCompiler::EqualityNode.new({ 
+													 :lineno => get_lineno(val[1]), 
+													 :left => get_val(val[0]), 
+													 :symbol => get_val(val[1]), 
+													 :right => get_val(val[2]) 
+												 }) 
+										 }
+
+    relational_expr    : add_expr { result = get_val(val[0]) }
+                       | relational_expr '<' add_expr { 
+													 result = SmallCCompiler::RelationNode.new({ 
+														 :lineno => get_lineno(val[1]), 
+														 :left => get_val(val[0]), 
+														 :symbol => get_val(val[1]), 
+														 :right => get_val(val[2]) 
+													 }) 
+											 }
+                       | relational_expr '>' add_expr { 
+													 result = SmallCCompiler::RelationNode.new({ 
+														 :lineno => get_lineno(val[1]), 
+														 :left => get_val(val[0]), 
+														 :symbol => get_val(val[1]), 
+														 :right => get_val(val[2]) 
+													 }) 
+											 }
+                       | relational_expr '<=' add_expr { 
+													 result = SmallCCompiler::RelationNode.new({ 
+														 :lineno => get_lineno(val[1]), 
+														 :left => get_val(val[0]), 
+														 :symbol => get_val(val[1]), 
+														 :right => get_val(val[2]) 
+													 }) 
+											 }
+                       | relational_expr '>=' add_expr { 
+													 result = SmallCCompiler::RelationNode.new({ 
+														 :lineno => get_lineno(val[1]), 
+														 :left => get_val(val[0]), 
+														 :symbol => get_val(val[1]), 
+														 :right => get_val(val[2]) 
+													 }) 
+											 }
+
+    add_expr      : mult_expr { result = get_val(val[0]) }
+                  | add_expr '+' mult_expr { 
+											result = SmallCCompiler::ArithmeticNode.new({ 
+												:lineno => get_lineno(val[1]), 
+												:left => get_val(val[0]), 
+												:symbol => get_val(val[1]), 
+												:right => get_val(val[2])
+											}) 
+									}
+                  | add_expr '-' mult_expr { 
+											result = SmallCCompiler::ArithmeticNode.new({ 
+												:lineno => get_lineno(val[1]), 
+												:left => get_val(val[0]), 
+												:symbol => get_val(val[1]), 
+												:right => get_val(val[2]) 
+											}) 
+									}
+
+    mult_expr  : unary_expr { result = get_val(val[0]) }
+               | mult_expr '*' unary_expr { 
+									 result = SmallCCompiler::ArithmeticNode.new({ 
+										 :lineno => get_lineno(val[1]), 
+										 :left => get_val(val[0]),
+										 :symbol => get_val(val[1]), 
+										 :right => get_val(val[2]) 
+									 }) 
+							 }
+               | mult_expr '/' unary_expr { 
+									 result = SmallCCompiler::ArithmeticNode.new({ 
+										 :lineno => get_lineno(val[1]), 
+										 :left => get_val(val[0]),
+										 :symbol => get_val(val[1]), 
+										 :right => get_val(val[2]) 
+									 }) 
+							 }
+    unary_expr  : postfix_expr { result = get_val(val[0]) }
+                | '-' unary_expr { 
+										result = SmallCCompiler::UnaryExpressionNode.new({ 
+											:lineno => get_lineno(val[0]), 
+											:symbol => get_val(val[0]), 
+											:value => get_val(val[1]) 
+										}) 
+								}
+                | '&' unary_expr { 
+										result = SmallCCompiler::UnaryExpressionNode.new({ 
+											:lineno => get_lineno(val[0]), 
+											:symbol => get_val(val[0]), 
+											:value => get_val(val[1]) 
+										}) 
+								}
+                | '*' unary_expr { 
+										result = SmallCCompiler::UnaryExpressionNode.new({ 
+											:lineno => get_lineno(val[0]), 
+											:symbol => get_val(val[0]),
+											:value => get_val(val[1]) 
+										}) 
+								}
+
+    postfix_expr  : primary_expr { result = get_val(val[0]) }
+                  | postfix_expr  '[' expression ']' { 
+											result = SmallCCompiler::ArrayNode.new({ 
+												:lineno => get_lineno(val[1]), 
+												:id => get_val(val[0]), 
+												:index => get_val(val[2]) 
+											}) 
+									}
+                  | IDENTIFIER  '(' argument_expression_listopt ')' { 
+											result = SmallCCompiler::CallFunctionNode.new({ 
+												:lineno => get_lineno(val[0]), 
+												:id => SmallCCompiler::IdentifierNode.new(val[0]), 
+												:args => get_val(val[2]) 
+											}) 
+									}
+
+    primary_expr  : IDENTIFIER { result = SmallCCompiler::IdentifierNode.new(val[0]) }
+                  | CONSTANT { result = SmallCCompiler::ConstantNode.new(val[0]) }
+                  | '(' expression ')' { result = get_val(val[1]) }
+
+    argument_expression_list : assign_expr { result = [get_val(val[0])].flatten }
+                             | argument_expression_list ',' assign_expr { result = [get_val(val[0]), get_val(val[2])].flatten }
+
+    expressionopt          : expression { result = get_val(val[0]) }
+                           | { result = SmallCCompiler::BrankNode.new }
+
+    argument_expression_listopt : argument_expression_list { result = get_val(val[0]) }
+                                | { result = [ SmallCCompiler::BrankNode.new ] }
+
+    parameter_type_listopt : parameter_type_list { result = get_val(val[0]) }
+                           | { result = [ SmallCCompiler::BrankNode.new ] }
+
+    declaration_listopt : declaration_list { result = get_val(val[0]) }
+                        | { result = [ SmallCCompiler::BrankNode.new ] }
+
+    statement_listopt : statement_list { result = get_val(val[0]) }
+                      | { result = [ SmallCCompiler::BrankNode.new ] }
+
+end
+
+---- header ----
+require 'pp'
+require 'pry'
+require_relative 'nodes'
+require_relative 'small_c.rex'
+
+def get_val(val)
+	if val.is_a? Array
+		val.flatten
+	elsif val == nil
+		SmallCCompiler::BrankNode.new
+	elsif val.is_a? Hash and val.has_key? :value
+		val[:value]
+	else
+		val
+	end
+end
+
+def get_lineno(val)
+	if val.is_a? SmallCCompiler::Node
+		val.lineno
+	elsif val.is_a? Array
+		get_lineno(val[0])
+	else
+		val[:lineno]
+	end
+end
+
+---- inner ----
+def get_tokens
+  if ARGV[0]
+    filename = ARGV[0]
+  else
+    print 'Enter filename: '
+    filename = gets.strip
+  end
+
+  rex = Sample.new
+  tokens = []
+
+  begin
+    rex.load_file filename
+    while token = rex.next_token
+      tokens << token
+    end
+    return tokens
+  rescue e
+    $stderr.puts e, e.backtrace
+  end
+end
+
+def parse
+  @tokens = get_tokens
+  do_parse
+end
+
+def next_token
+  t = @tokens.shift
+end
+
+---- footer ----
+
+if __FILE__ == $0
+  parser = MyParser.new
+
+  begin
+		tree = parser.parse
+		program = SmallCCompiler::ProgramNode.new({ :lineno => 1, :declarations => tree })
+#   Pry::ColorPrinter.pp program
+ 		puts program.to_original_code
+  rescue Racc::ParseError => e
+    $stderr.puts e, e.backtrace
+  end
+end
