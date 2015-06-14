@@ -7,7 +7,6 @@
 require 'racc/parser.rb'
 
 require 'pp'
-require 'pry'
 require_relative 'nodes'
 require_relative 'small_c.rex'
 
@@ -35,7 +34,7 @@ end
 
 class MyParser < Racc::Parser
 
-module_eval(<<'...end small_c.racc/module_eval...', 'small_c.racc', 368)
+module_eval(<<'...end small_c.racc/module_eval...', 'small_c.racc', 367)
 def get_tokens
   if ARGV[0]
     filename = ARGV[0]
@@ -65,6 +64,11 @@ end
 
 def next_token
   t = @tokens.shift
+end
+
+def on_error(err_token, err_val, values)
+	$stderr.puts "Syntax Error: near line #{err_val[:lineno]}"
+	exit
 end
 
 ...end small_c.racc/module_eval...
@@ -1190,9 +1194,14 @@ if __FILE__ == $0
   begin
 		tree = parser.parse
 		program = SmallCCompiler::ProgramNode.new({ :lineno => 1, :declarations => tree })
-#   Pry::ColorPrinter.pp program
- 		puts program.to_original_code
-  rescue Racc::ParseError => e
-    $stderr.puts e, e.backtrace
+		original_code = program.to_original_code
+
+		puts 'Syntax Tree:'
+		puts
+		pp program
+		puts
+		puts 'Original Code:'
+		puts
+		puts original_code
   end
 end

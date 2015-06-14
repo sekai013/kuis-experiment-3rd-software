@@ -338,7 +338,6 @@ end
 
 ---- header ----
 require 'pp'
-require 'pry'
 require_relative 'nodes'
 require_relative 'small_c.rex'
 
@@ -396,6 +395,11 @@ def next_token
   t = @tokens.shift
 end
 
+def on_error(err_token, err_val, values)
+	$stderr.puts "Syntax Error: near line #{err_val[:lineno]}"
+	exit
+end
+
 ---- footer ----
 
 if __FILE__ == $0
@@ -404,9 +408,14 @@ if __FILE__ == $0
   begin
 		tree = parser.parse
 		program = SmallCCompiler::ProgramNode.new({ :lineno => 1, :declarations => tree })
-#   Pry::ColorPrinter.pp program
- 		puts program.to_original_code
-  rescue Racc::ParseError => e
-    $stderr.puts e, e.backtrace
+		original_code = program.to_original_code
+
+		puts 'Syntax Tree:'
+		puts
+		pp program
+		puts
+		puts 'Original Code:'
+		puts
+		puts original_code
   end
 end
