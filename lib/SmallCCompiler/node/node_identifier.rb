@@ -9,6 +9,10 @@ module SmallCCompiler
 			@value = args[:value]
 		end
 
+		def transform_syntactic_suger
+			self
+		end
+
 		def to_original_code
 			@value
 		end

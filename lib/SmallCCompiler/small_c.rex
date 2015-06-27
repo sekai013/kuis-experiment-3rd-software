@@ -2,6 +2,7 @@ class Sample
 macro
   BLANK         [\ \t\n]+
 	PRESERVE      (if|else|while|for|return|int|void)
+	OPERATOR      (\=\=|\<\=|\>\=|\&\&|\|\|)
 rule
   {BLANK}
 	{PRESERVE}    { [text.upcase.to_sym, {
@@ -14,6 +15,10 @@ rule
 	}] }
 	\w+           { [:IDENTIFIER, {
 		:value  => text,
+		:lineno => lineno
+	}] }
+	{OPERATOR}    { [text, {
+		:value => text,
 		:lineno => lineno
 	}] }
   .             { [text, {

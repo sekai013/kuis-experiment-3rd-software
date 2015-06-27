@@ -6,6 +6,21 @@ module SmallCCompiler
 			@lineno = args[:lineno]
 		end
 
+		def transform_syntactic_suger
+			self.instance_variables.each do |var|
+				eval <<EVAL
+				if #{var}.is_a? Node
+					#{var} = #{var}.transform_syntactic_suger
+				elsif #{var}.is_a? Array
+					#{var} = #{var}.map{|i| i.transform_syntactic_suger}
+					#{var}.flatten!
+				end
+EVAL
+			end
+
+			self
+		end
+
 		def to_s
 			raise 'must implement to_s'
 		end

@@ -1,4 +1,6 @@
 *.swp
+*.zip
+/reports/
 /.bundle/
 /.yardoc
 /Gemfile.lock

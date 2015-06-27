@@ -1203,8 +1203,22 @@ if __FILE__ == $0
 		puts
 		pp program
 		puts
+=begin
 		puts 'Original Code:'
 		puts
 		puts original_code
+		puts
+=end
+		transformed_tree = program.transform_syntactic_suger
+		puts 'Syntax Tree after transforming syntactic suger:'
+		puts 
+		pp transformed_tree
+		puts
+#=begin
+		transformed_code = transformed_tree.to_original_code
+		puts 'Code after transforming syntactic suger:'
+		puts
+		puts transformed_code
+#=end
   end
 end

@@ -81,6 +81,13 @@ class Sample < Racc::Parser
 	}] }
 
 
+      when (text = @ss.scan(/(\=\=|\<\=|\>\=|\&\&|\|\|)/))
+         action { [text, {
+		:value => text,
+		:lineno => lineno
+	}] }
+
+
       when (text = @ss.scan(/./))
          action { [text, {
 		:value  => text,
@@ -100,17 +107,3 @@ class Sample < Racc::Parser
   end  # def _next_token
 
 end # class
-
-if __FILE__ == $0
-  exit  if ARGV.size != 1
-  filename = ARGV.shift
-  rex = Sample.new
-  begin
-    rex.load_file  filename
-    while  token = rex.next_token
-      p token
-    end
-  rescue
-    $stderr.printf  "%s:%d:%s\n", rex.filename, rex.lineno, $!.message
-  end
-end
