@@ -43,6 +43,10 @@ EVAL
 			self
 		end
 
+		def well_typed?
+			@condition.get_type == { :type => "int", :pointer => 0 } and @then.well_typed? and @else.well_typed? or raise "TypeError unexpected condition if" 
+		end
+
 		def to_original_code
 			if @else.is_a? SmallCCompiler::BrankNode
 				"if (#{@condition.to_original_code}) #{@then.to_original_code}"

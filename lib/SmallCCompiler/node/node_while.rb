@@ -41,6 +41,10 @@ EVAL
 			self
 		end
 
+		def well_typed?
+			@condition.get_type == { :type => "int", :pointer => 0 } and @statement.well_typed? or raise "TypeError unexpected condition while"
+		end
+
 		def to_original_code
 			"while (#{@condition.to_original_code}) #{@statement.to_original_code}"
 		end

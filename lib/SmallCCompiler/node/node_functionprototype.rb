@@ -12,6 +12,15 @@ module SmallCCompiler
 			@pointer = args[:pointer]
 		end
 
+		def semantic_analysis(env)
+			env.register self
+			self
+		end
+
+		def well_typed?
+			true
+		end
+
 		def to_original_code
 			"#{@type} #{@pointer ? '*' : ''}#{@id}(#{@params.map {|p| p.to_original_code}.join(', ')});"
 		end

@@ -9,9 +9,12 @@ rule
                          | function_definition
 
     declaration          : type_specifier declarator_list ';' {
+														type = get_val(val[0])
+														declarators = get_val(val[1])
+														declarators.each { |d| d.type = type }
 														result = SmallCCompiler::DeclarationNode.new({
 															:lineno => get_lineno(val[2]),
-															:type => get_val(val[0]), 
+															:type => type,
 															:declarators => get_val(val[1])
 														})
 													}
@@ -89,14 +92,14 @@ rule
 															result = { 
 																:lineno => get_lineno(val[0]), 
 																:pointer => false, 
-																:parameter => get_val(val[0]) 
+																:id => get_val(val[0]) 
 															} 
 													}
                           | '*' IDENTIFIER { 
 															result = { 
 																:lineno => get_lineno(val[0]), 
 																:pointer => true, 
-																:parameter => get_val(val[1]) 
+																:id => get_val(val[1]) 
 															}
 													}
 
@@ -111,7 +114,10 @@ rule
 										:lineno => get_lineno(val[0]), 
 										:condition => get_val(val[2]), 
 										:then => get_val(val[4]), 
-										:else => SmallCCompiler::BrankNode.new 
+										:else => SmallCCompiler::StatementNode.new({
+											:lineno => get_lineno(val[0]),
+											:value => SmallCCompiler::BrankNode.new
+										}) 
 									}) 
 							}
               | IF '(' expression ')' statement ELSE statement { 
@@ -343,6 +349,7 @@ end
 ---- header ----
 require 'pp'
 require_relative 'nodes'
+require_relative 'env'
 require_relative 'small_c.rex'
 
 def get_val(val)
@@ -411,29 +418,38 @@ if __FILE__ == $0
 
   begin
 		tree = parser.parse
+		env = SmallCCompiler::Environment.new
+
 		program = SmallCCompiler::ProgramNode.new({ :lineno => 1, :declarations => tree })
 		original_code = program.to_original_code
+		transformed_tree = program.transform_syntactic_suger
+		transformed_code = transformed_tree.to_original_code
+ 		analized_tree = transformed_tree.semantic_analysis env
 
+=begin
 		puts 'Syntax Tree:'
 		puts
 		pp program
 		puts
-=begin
 		puts 'Original Code:'
 		puts
 		puts original_code
 		puts
-=end
-		transformed_tree = program.transform_syntactic_suger
 		puts 'Syntax Tree after transforming syntactic suger:'
 		puts 
 		pp transformed_tree
 		puts
-#=begin
-		transformed_code = transformed_tree.to_original_code
 		puts 'Code after transforming syntactic suger:'
 		puts
 		puts transformed_code
-#=end
+		puts
+=end
+		puts "Analized Tree"
+		pp analized_tree
+		puts 'Semantic analysis finished'
+		puts 'Type analysis finished'
+		puts "Program is well_typed? : #{analized_tree.well_typed?}"
+	rescue => e
+		$stderr.puts e.message
   end
 end

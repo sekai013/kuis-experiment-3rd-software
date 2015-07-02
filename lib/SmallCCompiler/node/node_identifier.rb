@@ -13,6 +13,10 @@ module SmallCCompiler
 			self
 		end
 
+		def semantic_analysis(env)
+			env.refer self
+		end
+
 		def to_original_code
 			@value
 		end

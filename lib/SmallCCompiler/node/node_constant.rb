@@ -13,6 +13,13 @@ module SmallCCompiler
 			self
 		end
 
+		def get_type
+			{
+				:type => "int",
+				:pointer => 0
+			}
+		end
+
 		def to_original_code
 			@value
 		end

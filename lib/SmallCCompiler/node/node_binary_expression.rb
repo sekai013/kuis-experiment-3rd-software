@@ -11,6 +11,10 @@ module SmallCCompiler
 			@right = args[:right]
 		end
 
+		def well_typed?
+			raise "must implement well_typed?"
+		end
+
 		def to_original_code
 			"#{@left.to_original_code} #{@symbol} #{@right.to_original_code}"
 		end

@@ -8,6 +8,7 @@ require 'racc/parser.rb'
 
 require 'pp'
 require_relative 'nodes'
+require_relative 'env'
 require_relative 'small_c.rex'
 
 def get_val(val)
@@ -34,7 +35,7 @@ end
 
 class MyParser < Racc::Parser
 
-module_eval(<<'...end small_c.racc/module_eval...', 'small_c.racc', 371)
+module_eval(<<'...end small_c.racc/module_eval...', 'small_c.racc', 378)
 def get_tokens
   if ARGV[0]
     filename = ARGV[0]
@@ -474,9 +475,12 @@ module_eval(<<'.,.,', 'small_c.racc', 7)
 
 module_eval(<<'.,.,', 'small_c.racc', 11)
   def _reduce_6(val, _values, result)
-    														result = SmallCCompiler::DeclarationNode.new({
+    														type = get_val(val[0])
+														declarators = get_val(val[1])
+														declarators.each { |d| d.type = type }
+														result = SmallCCompiler::DeclarationNode.new({
 															:lineno => get_lineno(val[2]),
-															:type => get_val(val[0]), 
+															:type => type,
 															:declarators => get_val(val[1])
 														})
 													
@@ -484,21 +488,21 @@ module_eval(<<'.,.,', 'small_c.racc', 11)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 18)
+module_eval(<<'.,.,', 'small_c.racc', 21)
   def _reduce_7(val, _values, result)
      result = [get_val(val[0])].flatten 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 19)
+module_eval(<<'.,.,', 'small_c.racc', 22)
   def _reduce_8(val, _values, result)
      result = [get_val(val[0]), get_val(val[2])].flatten 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 22)
+module_eval(<<'.,.,', 'small_c.racc', 25)
   def _reduce_9(val, _values, result)
     														args = get_val(val[0])
 			 											args[:pointer] = false 
@@ -508,7 +512,7 @@ module_eval(<<'.,.,', 'small_c.racc', 22)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 27)
+module_eval(<<'.,.,', 'small_c.racc', 30)
   def _reduce_10(val, _values, result)
     														args = get_val(val[1])
 														args[:pointer] = true
@@ -518,7 +522,7 @@ module_eval(<<'.,.,', 'small_c.racc', 27)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 33)
+module_eval(<<'.,.,', 'small_c.racc', 36)
   def _reduce_11(val, _values, result)
     													result = {
 														:lineno => get_lineno(val[0]),
@@ -530,7 +534,7 @@ module_eval(<<'.,.,', 'small_c.racc', 33)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 40)
+module_eval(<<'.,.,', 'small_c.racc', 43)
   def _reduce_12(val, _values, result)
     												 	result = { 
 														:lineno => get_lineno(val[1]), 
@@ -542,7 +546,7 @@ module_eval(<<'.,.,', 'small_c.racc', 40)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 48)
+module_eval(<<'.,.,', 'small_c.racc', 51)
   def _reduce_13(val, _values, result)
     														args = get_val(val[1])
 														args[:type] = get_val(val[0])
@@ -552,7 +556,7 @@ module_eval(<<'.,.,', 'small_c.racc', 48)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 54)
+module_eval(<<'.,.,', 'small_c.racc', 57)
   def _reduce_14(val, _values, result)
     														result = { 
 															:lineno => get_lineno(val[1]), 
@@ -565,7 +569,7 @@ module_eval(<<'.,.,', 'small_c.racc', 54)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 62)
+module_eval(<<'.,.,', 'small_c.racc', 65)
   def _reduce_15(val, _values, result)
     													 	result = { 
 															:lineno => get_lineno(val[0]), 
@@ -578,7 +582,7 @@ module_eval(<<'.,.,', 'small_c.racc', 62)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 72)
+module_eval(<<'.,.,', 'small_c.racc', 75)
   def _reduce_16(val, _values, result)
     														args = get_val(val[1])
 														args[:type] = get_val(val[0])
@@ -589,21 +593,21 @@ module_eval(<<'.,.,', 'small_c.racc', 72)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 78)
+module_eval(<<'.,.,', 'small_c.racc', 81)
   def _reduce_17(val, _values, result)
      result = [get_val(val[0])].flatten 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 79)
+module_eval(<<'.,.,', 'small_c.racc', 82)
   def _reduce_18(val, _values, result)
      result = [get_val(val[0]), get_val(val[2])].flatten 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 82)
+module_eval(<<'.,.,', 'small_c.racc', 85)
   def _reduce_19(val, _values, result)
     															args = get_val(val[1])
 															args[:type] = get_val(val[0])
@@ -613,79 +617,82 @@ module_eval(<<'.,.,', 'small_c.racc', 82)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 88)
+module_eval(<<'.,.,', 'small_c.racc', 91)
   def _reduce_20(val, _values, result)
     															result = { 
 																:lineno => get_lineno(val[0]), 
 																:pointer => false, 
-																:parameter => get_val(val[0]) 
+																:id => get_val(val[0]) 
 															} 
 													
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 95)
+module_eval(<<'.,.,', 'small_c.racc', 98)
   def _reduce_21(val, _values, result)
     															result = { 
 																:lineno => get_lineno(val[0]), 
 																:pointer => true, 
-																:parameter => get_val(val[1]) 
+																:id => get_val(val[1]) 
 															}
 													
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 102)
+module_eval(<<'.,.,', 'small_c.racc', 105)
   def _reduce_22(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 103)
+module_eval(<<'.,.,', 'small_c.racc', 106)
   def _reduce_23(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 105)
+module_eval(<<'.,.,', 'small_c.racc', 108)
   def _reduce_24(val, _values, result)
      result = SmallCCompiler::StatementNode.new({ :lineno => get_lineno(val[0]), :value => SmallCCompiler::BrankNode.new }) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 106)
+module_eval(<<'.,.,', 'small_c.racc', 109)
   def _reduce_25(val, _values, result)
      result = SmallCCompiler::StatementNode.new({ :lineno => get_lineno(val[1]), :value => get_val(val[0]) }) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 107)
+module_eval(<<'.,.,', 'small_c.racc', 110)
   def _reduce_26(val, _values, result)
      result = SmallCCompiler::StatementNode.new({ :lineno => get_lineno(val[0]), :value => get_val(val[0]) }) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 109)
+module_eval(<<'.,.,', 'small_c.racc', 112)
   def _reduce_27(val, _values, result)
     									result = SmallCCompiler::IfNode.new({ 
 										:lineno => get_lineno(val[0]), 
 										:condition => get_val(val[2]), 
 										:then => get_val(val[4]), 
-										:else => SmallCCompiler::BrankNode.new 
+										:else => SmallCCompiler::StatementNode.new({
+											:lineno => get_lineno(val[0]),
+											:value => SmallCCompiler::BrankNode.new
+										}) 
 									}) 
 							
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 117)
+module_eval(<<'.,.,', 'small_c.racc', 123)
   def _reduce_28(val, _values, result)
     									result = SmallCCompiler::IfNode.new({ 
 										:lineno => get_lineno(val[0]), 
@@ -698,7 +705,7 @@ module_eval(<<'.,.,', 'small_c.racc', 117)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 125)
+module_eval(<<'.,.,', 'small_c.racc', 131)
   def _reduce_29(val, _values, result)
     									result = SmallCCompiler::WhileNode.new({ 
 										:lineno => get_lineno(val[0]), 
@@ -710,7 +717,7 @@ module_eval(<<'.,.,', 'small_c.racc', 125)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 132)
+module_eval(<<'.,.,', 'small_c.racc', 138)
   def _reduce_30(val, _values, result)
     									result = SmallCCompiler::ForNode.new({ 
 										:lineno => get_lineno(val[0]), 
@@ -724,14 +731,14 @@ module_eval(<<'.,.,', 'small_c.racc', 132)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 140)
+module_eval(<<'.,.,', 'small_c.racc', 146)
   def _reduce_31(val, _values, result)
      result = SmallCCompiler::ReturnNode.new({ :lineno => get_lineno(val[0]), :expression => get_val(val[1]) }) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 143)
+module_eval(<<'.,.,', 'small_c.racc', 149)
   def _reduce_32(val, _values, result)
     													result = SmallCCompiler::CompoundStatementNode.new({ 
 														:lineno => get_lineno(val[0]), 
@@ -743,56 +750,56 @@ module_eval(<<'.,.,', 'small_c.racc', 143)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 150)
+module_eval(<<'.,.,', 'small_c.racc', 156)
   def _reduce_33(val, _values, result)
      result = [get_val(val[0])].flatten 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 151)
+module_eval(<<'.,.,', 'small_c.racc', 157)
   def _reduce_34(val, _values, result)
      result = get_val(val) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 153)
+module_eval(<<'.,.,', 'small_c.racc', 159)
   def _reduce_35(val, _values, result)
      result = [get_val(val[0])].flatten 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 154)
+module_eval(<<'.,.,', 'small_c.racc', 160)
   def _reduce_36(val, _values, result)
      result = get_val(val) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 156)
+module_eval(<<'.,.,', 'small_c.racc', 162)
   def _reduce_37(val, _values, result)
      result = SmallCCompiler::ExpressionNode.new( { :lineno => get_lineno(val[0]), :values => get_val(val) } )
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 157)
+module_eval(<<'.,.,', 'small_c.racc', 163)
   def _reduce_38(val, _values, result)
      result = SmallCCompiler::ExpressionNode.new( { :lineno => get_lineno(val[1]), :values => [get_val(val[0]), get_val(val[2])].flatten }) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 159)
+module_eval(<<'.,.,', 'small_c.racc', 165)
   def _reduce_39(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 161)
+module_eval(<<'.,.,', 'small_c.racc', 167)
   def _reduce_40(val, _values, result)
     											 	result = SmallCCompiler::AssignNode.new({ 
 													:lineno => get_lineno(val[1]), 
@@ -804,14 +811,14 @@ module_eval(<<'.,.,', 'small_c.racc', 161)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 168)
+module_eval(<<'.,.,', 'small_c.racc', 174)
   def _reduce_41(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 170)
+module_eval(<<'.,.,', 'small_c.racc', 176)
   def _reduce_42(val, _values, result)
     															 result = SmallCCompiler::LogicNode.new({ 
 															 	:lineno => get_lineno(val[1]), 
@@ -824,14 +831,14 @@ module_eval(<<'.,.,', 'small_c.racc', 170)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 178)
+module_eval(<<'.,.,', 'small_c.racc', 184)
   def _reduce_43(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 180)
+module_eval(<<'.,.,', 'small_c.racc', 186)
   def _reduce_44(val, _values, result)
     															result = SmallCCompiler::LogicNode.new({ 
 																:lineno => get_lineno(val[1]), 
@@ -844,14 +851,14 @@ module_eval(<<'.,.,', 'small_c.racc', 180)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 188)
+module_eval(<<'.,.,', 'small_c.racc', 194)
   def _reduce_45(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 190)
+module_eval(<<'.,.,', 'small_c.racc', 196)
   def _reduce_46(val, _values, result)
     												 result = SmallCCompiler::EqualityNode.new({ 
 													 :lineno => get_lineno(val[1]), 
@@ -864,7 +871,7 @@ module_eval(<<'.,.,', 'small_c.racc', 190)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 198)
+module_eval(<<'.,.,', 'small_c.racc', 204)
   def _reduce_47(val, _values, result)
     												 result = SmallCCompiler::EqualityNode.new({ 
 													 :lineno => get_lineno(val[1]), 
@@ -877,14 +884,14 @@ module_eval(<<'.,.,', 'small_c.racc', 198)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 206)
+module_eval(<<'.,.,', 'small_c.racc', 212)
   def _reduce_48(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 208)
+module_eval(<<'.,.,', 'small_c.racc', 214)
   def _reduce_49(val, _values, result)
     													 result = SmallCCompiler::RelationNode.new({ 
 														 :lineno => get_lineno(val[1]), 
@@ -897,7 +904,7 @@ module_eval(<<'.,.,', 'small_c.racc', 208)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 216)
+module_eval(<<'.,.,', 'small_c.racc', 222)
   def _reduce_50(val, _values, result)
     													 result = SmallCCompiler::RelationNode.new({ 
 														 :lineno => get_lineno(val[1]), 
@@ -910,7 +917,7 @@ module_eval(<<'.,.,', 'small_c.racc', 216)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 224)
+module_eval(<<'.,.,', 'small_c.racc', 230)
   def _reduce_51(val, _values, result)
     													 result = SmallCCompiler::RelationNode.new({ 
 														 :lineno => get_lineno(val[1]), 
@@ -923,7 +930,7 @@ module_eval(<<'.,.,', 'small_c.racc', 224)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 232)
+module_eval(<<'.,.,', 'small_c.racc', 238)
   def _reduce_52(val, _values, result)
     													 result = SmallCCompiler::RelationNode.new({ 
 														 :lineno => get_lineno(val[1]), 
@@ -936,14 +943,14 @@ module_eval(<<'.,.,', 'small_c.racc', 232)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 240)
+module_eval(<<'.,.,', 'small_c.racc', 246)
   def _reduce_53(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 242)
+module_eval(<<'.,.,', 'small_c.racc', 248)
   def _reduce_54(val, _values, result)
     											result = SmallCCompiler::ArithmeticNode.new({ 
 												:lineno => get_lineno(val[1]), 
@@ -956,7 +963,7 @@ module_eval(<<'.,.,', 'small_c.racc', 242)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 250)
+module_eval(<<'.,.,', 'small_c.racc', 256)
   def _reduce_55(val, _values, result)
     											result = SmallCCompiler::ArithmeticNode.new({ 
 												:lineno => get_lineno(val[1]), 
@@ -969,14 +976,14 @@ module_eval(<<'.,.,', 'small_c.racc', 250)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 258)
+module_eval(<<'.,.,', 'small_c.racc', 264)
   def _reduce_56(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 260)
+module_eval(<<'.,.,', 'small_c.racc', 266)
   def _reduce_57(val, _values, result)
     									 result = SmallCCompiler::ArithmeticNode.new({ 
 										 :lineno => get_lineno(val[1]), 
@@ -989,7 +996,7 @@ module_eval(<<'.,.,', 'small_c.racc', 260)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 268)
+module_eval(<<'.,.,', 'small_c.racc', 274)
   def _reduce_58(val, _values, result)
     									 result = SmallCCompiler::ArithmeticNode.new({ 
 										 :lineno => get_lineno(val[1]), 
@@ -1002,14 +1009,14 @@ module_eval(<<'.,.,', 'small_c.racc', 268)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 275)
+module_eval(<<'.,.,', 'small_c.racc', 281)
   def _reduce_59(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 277)
+module_eval(<<'.,.,', 'small_c.racc', 283)
   def _reduce_60(val, _values, result)
     										result = SmallCCompiler::UnaryExpressionNode.new({ 
 											:lineno => get_lineno(val[0]), 
@@ -1021,7 +1028,7 @@ module_eval(<<'.,.,', 'small_c.racc', 277)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 284)
+module_eval(<<'.,.,', 'small_c.racc', 290)
   def _reduce_61(val, _values, result)
     										result = SmallCCompiler::UnaryExpressionNode.new({ 
 											:lineno => get_lineno(val[0]), 
@@ -1033,7 +1040,7 @@ module_eval(<<'.,.,', 'small_c.racc', 284)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 291)
+module_eval(<<'.,.,', 'small_c.racc', 297)
   def _reduce_62(val, _values, result)
     										result = SmallCCompiler::UnaryExpressionNode.new({ 
 											:lineno => get_lineno(val[0]), 
@@ -1045,14 +1052,14 @@ module_eval(<<'.,.,', 'small_c.racc', 291)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 298)
+module_eval(<<'.,.,', 'small_c.racc', 304)
   def _reduce_63(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 300)
+module_eval(<<'.,.,', 'small_c.racc', 306)
   def _reduce_64(val, _values, result)
     											result = SmallCCompiler::ArrayNode.new({ 
 												:lineno => get_lineno(val[1]), 
@@ -1064,7 +1071,7 @@ module_eval(<<'.,.,', 'small_c.racc', 300)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 307)
+module_eval(<<'.,.,', 'small_c.racc', 313)
   def _reduce_65(val, _values, result)
     											result = SmallCCompiler::CallFunctionNode.new({ 
 												:lineno => get_lineno(val[0]), 
@@ -1076,21 +1083,21 @@ module_eval(<<'.,.,', 'small_c.racc', 307)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 314)
+module_eval(<<'.,.,', 'small_c.racc', 320)
   def _reduce_66(val, _values, result)
      result = SmallCCompiler::IdentifierNode.new(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 315)
+module_eval(<<'.,.,', 'small_c.racc', 321)
   def _reduce_67(val, _values, result)
      result = SmallCCompiler::ConstantNode.new(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 317)
+module_eval(<<'.,.,', 'small_c.racc', 323)
   def _reduce_68(val, _values, result)
     											r = get_val(val[1]) 
 											r.prior
@@ -1100,84 +1107,84 @@ module_eval(<<'.,.,', 'small_c.racc', 317)
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 322)
+module_eval(<<'.,.,', 'small_c.racc', 328)
   def _reduce_69(val, _values, result)
      result = [get_val(val[0])].flatten 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 323)
+module_eval(<<'.,.,', 'small_c.racc', 329)
   def _reduce_70(val, _values, result)
      result = [get_val(val[0]), get_val(val[2])].flatten 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 325)
+module_eval(<<'.,.,', 'small_c.racc', 331)
   def _reduce_71(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 326)
+module_eval(<<'.,.,', 'small_c.racc', 332)
   def _reduce_72(val, _values, result)
      result = SmallCCompiler::BrankNode.new 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 328)
+module_eval(<<'.,.,', 'small_c.racc', 334)
   def _reduce_73(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 329)
+module_eval(<<'.,.,', 'small_c.racc', 335)
   def _reduce_74(val, _values, result)
      result = [ SmallCCompiler::BrankNode.new ] 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 331)
+module_eval(<<'.,.,', 'small_c.racc', 337)
   def _reduce_75(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 332)
+module_eval(<<'.,.,', 'small_c.racc', 338)
   def _reduce_76(val, _values, result)
      result = [ SmallCCompiler::BrankNode.new ] 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 334)
+module_eval(<<'.,.,', 'small_c.racc', 340)
   def _reduce_77(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 335)
+module_eval(<<'.,.,', 'small_c.racc', 341)
   def _reduce_78(val, _values, result)
      result = [ SmallCCompiler::BrankNode.new ] 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 337)
+module_eval(<<'.,.,', 'small_c.racc', 343)
   def _reduce_79(val, _values, result)
      result = get_val(val[0]) 
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'small_c.racc', 338)
+module_eval(<<'.,.,', 'small_c.racc', 344)
   def _reduce_80(val, _values, result)
      result = [ SmallCCompiler::BrankNode.new ] 
     result
@@ -1196,29 +1203,37 @@ if __FILE__ == $0
 
   begin
 		tree = parser.parse
+		env = SmallCCompiler::Environment.new
+
 		program = SmallCCompiler::ProgramNode.new({ :lineno => 1, :declarations => tree })
 		original_code = program.to_original_code
+		transformed_tree = program.transform_syntactic_suger
+		transformed_code = transformed_tree.to_original_code
+ 		analized_tree = transformed_tree.semantic_analysis env
 
+=begin
 		puts 'Syntax Tree:'
 		puts
 		pp program
 		puts
-=begin
 		puts 'Original Code:'
 		puts
 		puts original_code
 		puts
-=end
-		transformed_tree = program.transform_syntactic_suger
 		puts 'Syntax Tree after transforming syntactic suger:'
 		puts 
 		pp transformed_tree
 		puts
-#=begin
-		transformed_code = transformed_tree.to_original_code
-		puts 'Code after transforming syntactic suger:'
+#		puts 'Code after transforming syntactic suger:'
+#		puts
+#		puts transformed_code
 		puts
-		puts transformed_code
-#=end
+=end
+		puts "Analized Tree"
+		pp analized_tree
+		puts 'semantic analysis finished'
+		puts "well_typed? #{analized_tree.well_typed?}"
+	rescue => e
+		$stderr.puts e.message, e.backtrace
   end
 end

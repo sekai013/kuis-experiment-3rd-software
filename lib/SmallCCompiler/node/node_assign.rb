@@ -8,5 +8,13 @@ module SmallCCompiler
 			@symbol = '='
 			@right = args[:right]
 		end
+
+		def get_type
+			if @right.get_type == @left.get_type
+				@right.get_type
+			else
+				raise "TypeError not assignable"
+			end
+		end
 	end
 end

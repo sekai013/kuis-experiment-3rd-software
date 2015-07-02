@@ -12,13 +12,35 @@ module SmallCCompiler
 				if #{var}.is_a? Node
 					#{var} = #{var}.transform_syntactic_suger
 				elsif #{var}.is_a? Array
-					#{var} = #{var}.map{|i| i.transform_syntactic_suger}
+					#{var}.map! {|i| i.transform_syntactic_suger}
 					#{var}.flatten!
 				end
 EVAL
 			end
 
 			self
+		end
+
+		def semantic_analysis(env)
+			self.instance_variables.each do |var|
+				eval <<EVAL
+				if #{var}.is_a? Node
+					#{var} = #{var}.semantic_analysis env
+				elsif #{var}.is_a? Array
+					#{var}.map! { |i| i.semantic_analysis env }
+				end
+EVAL
+			end
+
+			self
+		end
+
+		def get_type
+			raise "must implement get_type #{self.class}"
+		end
+
+		def well_typed?
+			raise "must implement well_typed?"
 		end
 
 		def to_s

@@ -12,6 +12,19 @@ module SmallCCompiler
 			@@nest = 0
 		end
 
+		def semantic_analysis(env)
+			env.nest
+			@declarations.map! { |d| d.semantic_analysis env }
+			@statements.map! { |s| s.semantic_analysis env }
+			env.unnest
+
+			self
+		end
+
+		def well_typed?
+			(@statements.map { |s| s.well_typed? }.include? false) ? false : true
+		end
+
 		def to_original_code
 			@@nest += 1
 			declaration_part = @declarations.map {|d| "#{"\t" * @@nest}#{d.to_original_code}"}.join "\n"

@@ -1,6 +1,7 @@
 require_relative 'node'
 require_relative 'node_arithmetic'
 require_relative 'node_constant'
+require_relative 'node_identifier'
 
 module SmallCCompiler
 	class UnaryExpressionNode < Node
@@ -38,6 +39,37 @@ EVAL
 					@value.value
 			else
 				self
+			end
+		end
+
+		def semantic_analysis(env)
+			if @symbol == '&'
+				raise "ArgumentError cannot take the address" unless @value.is_a? IdentifierNode
+			end
+			@value = @value.semantic_analysis env
+
+			self
+		end
+
+		def get_type
+			val = @value.get_type
+			case @symbol
+			when '&'
+				if val[:pointer] = 0
+					val[:pointer] = 1 
+					val
+				else
+					raise "CompilerError Invalid Operand of &"
+				end
+			when '*'
+				if val[:pointer] > 0
+					val[:pointer] -= 1 
+					val
+				else
+					raise "PointerOperandError"
+				end
+			else
+				raise "CompilerError Invalid UnaryExpressionNode: #{self}"
 			end
 		end
 

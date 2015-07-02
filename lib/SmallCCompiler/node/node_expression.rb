@@ -14,6 +14,10 @@ module SmallCCompiler
 			@parentheses = true
 		end
 
+		def get_type
+			@values.last.get_type
+		end
+
 		def to_original_code
 			c = @values.map { |v| v.to_original_code }.join ', '
 			if @parentheses

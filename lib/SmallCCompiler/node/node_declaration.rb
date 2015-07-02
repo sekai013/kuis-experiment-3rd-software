@@ -10,6 +10,12 @@ module SmallCCompiler
 			@declarators = args[:declarators]
 		end
 
+		def semantic_analysis(env)
+			@declarators.map! { |d| d.semantic_analysis env }
+
+			self
+		end
+
 		def to_original_code
 			"#{@type} #{@declarators.map { |d| d.to_original_code }.join ', '};"
 		end
