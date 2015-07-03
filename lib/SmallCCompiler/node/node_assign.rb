@@ -13,7 +13,7 @@ module SmallCCompiler
 			if @right.get_type == @left.get_type
 				@right.get_type
 			else
-				raise "TypeError not assignable"
+				raise "TypeError: near line #{@lineno} : not assignable"
 			end
 		end
 	end

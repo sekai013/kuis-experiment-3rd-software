@@ -42,7 +42,7 @@ EVAL
 		end
 
 		def well_typed?
-			@condition.get_type == { :type => "int", :pointer => 0 } and @statement.well_typed? or raise "TypeError unexpected condition while"
+			@condition.get_type == { :type => "int", :pointer => 0 } and @statement.well_typed? or raise "TypeError: near line #{@lineno} : unexpected condition while"
 		end
 
 		def to_original_code

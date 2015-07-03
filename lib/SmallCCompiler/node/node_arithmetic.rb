@@ -13,7 +13,7 @@ module SmallCCompiler
 						:pointer => [left_type[:pointer], right_type[:pointer]].max
 					}
 				else
-					raise "TypeError invalid operands to binary expression #{@symbol}"
+					raise "TypeError: near line #{@lineno} : invalid operands to binary expression #{@symbol}"
 				end
 			when '-'
 				if right_type[:pointer] == 0
@@ -22,7 +22,7 @@ module SmallCCompiler
 						:pointer => left_type[:pointer]
 					}
 				else
-					raise "TypeError invalid operands to binary expression #{@symbol}"
+					raise "TypeError: near line #{@lineno} : invalid operands to binary expression #{@symbol}"
 				end
 			when '*', '/'
 				if left_type[:pointer] == 0 and right_type[:pointer] == 0
@@ -31,7 +31,7 @@ module SmallCCompiler
 						:pointer => 0
 					}
 				else
-					raise "TypeError invalid operands to binary expression #{@symbol}"
+					raise "TypeError: near line #{@lineno} : invalid operands to binary expression #{@symbol}"
 				end
 			end
 		end

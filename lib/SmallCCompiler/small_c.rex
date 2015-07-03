@@ -1,6 +1,6 @@
 class Sample
 macro
-  BLANK         [\ \t\n]+
+  BLANK         [\ \t\n]
 	PRESERVE      (if|else|while|for|return|int|void)
 	OPERATOR      (\=\=|\<\=|\>\=|\&\&|\|\|)
 rule

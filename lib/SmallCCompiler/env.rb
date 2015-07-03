@@ -30,7 +30,7 @@ module SmallCCompiler
 
 					node.params.size.times do |n|
 						if node.params[n].type != env_node.params[n].type
-							raise "DoubleDeclarationError #{node.id}"
+							raise "DoubleDeclarationError: near line #{node.lineno} : #{node.id}"
 						end
 					end
 
@@ -41,11 +41,11 @@ module SmallCCompiler
 
 					node.params.size.times do |n|
 						if node.params[n].type != env_node.params[n].type
-							raise "DoubleDeclarationError #{node.id}"
+							raise "DoubleDeclarationError: near line #{node.lineno} : #{node.id}"
 						end
 					end
 				else
-					raise "DoubleDeclarationError #{node.id}"
+					raise "DoubleDeclarationError: near line #{node.lineno} : #{node.id}"
 				end
 			else
 				@env[@level][node.id.to_sym] = node
@@ -62,11 +62,11 @@ module SmallCCompiler
 
 		def call_function(callfunc_node)
 			func_node = callfunc_node.id
-			raise "CallFunctionError #{id} is not a function" unless func_node.is_a? FunctionNode
+			raise "CallFunctionError: near line #{callfunc_node.lineno} : #{id} is not a function" unless func_node.is_a? FunctionNode
 			raise "ArgumentError wrong number of arguments #{callfunc_node.args.size} for #{func_node.params.size}" if callfunc_node.args.size != func_node.params.size
 
 			func_node.params.size.times do |n|
-				raise "TypeError wrong type of argument" if callfunc_node.args[n].get_type != func_node.params[n].get_type
+				raise "TypeError: near line #{callfunc_node.lineno} : wrong type of argument" if callfunc_node.args[n].get_type != func_node.params[n].get_type
 			end
 		end
 
@@ -76,7 +76,7 @@ module SmallCCompiler
 					return @env[n][id_node.value.to_sym]
 				end
 			end
-			raise "ReferenceError #{id_node.value}"
+			raise "ReferenceError: near line #{id_node.lineno} : undeclared variable or function #{id_node.value}"
 		end
 
 		def nest

@@ -36,7 +36,7 @@ EVAL
 		end
 
 		def get_type
-			raise "must implement get_type #{self.class}"
+			raise "must implement get_type"
 		end
 
 		def well_typed?

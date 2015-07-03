@@ -9,7 +9,7 @@ module SmallCCompiler
 					:pointer => 0
 				}
 			else
-				raise "TypeError invalid operands to binary expression #{@symbol}"
+				raise "TypeError: near line #{@lineno} : invalid operands to binary expression #{@symbol}"
 			end
 		end
 	end

@@ -1,6 +1,28 @@
 void swap(int *array, int i, int j);
 void quicksort(int *array, int left, int right);
 
+int main() {
+	int i;
+	int data[8];
+
+	data[0] = 4;
+	data[1] = 3;
+	data[2] = 8;
+	data[3] = 1;
+	data[4] = 6;
+	data[5] = 2;
+	data[6] = 7;
+	data[7] = 5;
+
+	quicksort(data, 0, 7);
+
+	for (i = 0; i < 8; i = i + 1) {
+		print(data[i]);
+	}
+
+	return 0;
+}
+
 void swap(int *array, int i, int j) {
 	int tmp;
 
@@ -34,26 +56,4 @@ void quicksort(int *array, int left, int right) {
 	if (right - r > 1) {
 		quicksort(array, r, right);
 	}
-}
-
-int main() {
-	int i;
-	int data[8];
-
-	data[0] = 4;
-	data[1] = 3;
-	data[2] = 8;
-	data[3] = 1;
-	data[4] = 6;
-	data[5] = 2;
-	data[6] = 7;
-	data[7] = 5;
-
-	quicksort(data, 0, 7);
-
-	for (i = 0; i < 8; i = i + 1) {
-		print(data[i]);
-	}
-
-	return 0;
 }

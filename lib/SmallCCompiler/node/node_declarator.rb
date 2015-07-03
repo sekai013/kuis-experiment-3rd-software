@@ -19,7 +19,7 @@ module SmallCCompiler
 		end
 
 		def get_type
-			raise "TypeError variable has invalid type 'void'"	if @type == "void"
+			raise "TypeError: near line #{@lineno} : variable has invalid type 'void'"	if @type == "void"
 
 			p = 0
 			p += 1 if @size > 0

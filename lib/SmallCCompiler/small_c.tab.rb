@@ -1224,15 +1224,16 @@ if __FILE__ == $0
 		puts 
 		pp transformed_tree
 		puts
-#		puts 'Code after transforming syntactic suger:'
-#		puts
-#		puts transformed_code
+		puts 'Code after transforming syntactic suger:'
+		puts
+		puts transformed_code
 		puts
 =end
 		puts "Analized Tree"
 		pp analized_tree
-		puts 'semantic analysis finished'
-		puts "well_typed? #{analized_tree.well_typed?}"
+		puts 'Semantic analysis finished'
+		puts 'Type analysis finished'
+		puts "Program is well_typed? : #{analized_tree.well_typed?}"
 	rescue => e
 		$stderr.puts e.message, e.backtrace
   end

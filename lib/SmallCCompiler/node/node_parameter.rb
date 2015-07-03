@@ -17,7 +17,7 @@ module SmallCCompiler
 		end
 
 		def get_type
-			raise "TypeError argument may not have 'void' type" if @type == 'void'
+			raise "TypeError: near line #{@lineno} : argument may not have 'void' type" if @type == 'void'
 
 			type = {
 				:type => @type,

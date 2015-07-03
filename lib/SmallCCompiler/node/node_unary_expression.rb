@@ -44,7 +44,7 @@ EVAL
 
 		def semantic_analysis(env)
 			if @symbol == '&'
-				raise "ArgumentError cannot take the address" unless @value.is_a? IdentifierNode
+				raise "ArgumentError: near line #{@lineno} : cannot take the address" unless @value.is_a? IdentifierNode
 			end
 			@value = @value.semantic_analysis env
 
@@ -66,10 +66,10 @@ EVAL
 					val[:pointer] -= 1 
 					val
 				else
-					raise "PointerOperandError"
+					raise "PointerOperandError: near line #{@lineno}"
 				end
 			else
-				raise "CompilerError Invalid UnaryExpressionNode: #{self}"
+				raise "CompilerError: near line #{@lineno} : Invalid UnaryExpressionNode: #{self}"
 			end
 		end
 

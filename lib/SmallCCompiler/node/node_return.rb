@@ -16,7 +16,7 @@ module SmallCCompiler
 		end
 
 		def well_typed?
-			(@function and (@function.get_type == @expression.get_type)) or raise "TypeError: #{@function.id} should return a value of type #{@function.type}#{@function.pointer ? ' *' : ''}"
+			(@function and (@function.get_type == @expression.get_type)) or raise "TypeError: near line #{@lineno} : #{@function.id} should return a value of type #{@function.type}#{@function.pointer ? ' *' : ''}"
 		end
 
 		def to_original_code

@@ -1,4 +1,5 @@
 require_relative 'node'
+require_relative 'node_function'
 
 module SmallCCompiler
 	class ProgramNode < Node
@@ -7,6 +8,17 @@ module SmallCCompiler
 		def initialize(args)
 			@lineno = args[:lineno]
 			@declarations = args[:declarations]
+		end
+
+		def semantic_analysis(env)
+			@declarations.each_with_index do |d, index|
+				if d.is_a? FunctionNode and d.id == "main"
+					main = @declarations.slice! index
+					@declarations << main
+				end
+			end
+			@declarations.map! { |d| d.semantic_analysis env }
+			self
 		end
 
 		def well_typed?

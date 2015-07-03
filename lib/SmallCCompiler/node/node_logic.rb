@@ -11,7 +11,7 @@ module SmallCCompiler
 			if left_type == @right.get_type and left_type == int
 				int
 			else
-				raise "TypeError invalid operands to binary expression #{@symbol}"
+				raise "TypeError: near line #{@lineno} : invalid operands to binary expression #{@symbol}"
 			end
 		end
 	end

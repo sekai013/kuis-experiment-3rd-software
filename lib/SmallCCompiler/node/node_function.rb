@@ -18,7 +18,7 @@ module SmallCCompiler
 		end
 
 		def semantic_analysis(env)
-			raise "ReturnError control may reach end of non-void function #{@id}" if @type != "void" and value_returned?(@compound_statement) == false
+			raise "ReturnError: near line #{@lineno} : control may reach end of non-void function #{@id}" if @type != "void" and value_returned?(@compound_statement) == false
 			env.register self
 			env.define_function self
 			env.nest
